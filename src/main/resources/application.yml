@@ -1,0 +1,27 @@
+server:
+  port: 9999
+spring:
+  application:
+    name: JavaRun
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML5
+    encoding: UTF-8
+    cache: false
+    servlet:
+      content-type: text/html
+  web:
+    resources:
+      chain:
+        strategy:
+          content:
+            enabled: true
+            paths: /**
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+      exclude: templates
+  mvc:
+    static-path-pattern: static/**

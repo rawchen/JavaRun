@@ -1,0 +1,42 @@
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: #bbb
+}
+
+.d-flex {
+	display: flex;
+}
+
+/*@media screen and (max-width: 700px) {*/
+/*	.d-flex {*/
+/*		display: block;*/
+/*	}*/
+/*}*/
+
+.flex-row {
+	flex-direction: row;
+}
+.flex-warp {
+	flex-wrap: wrap;
+}
+.flex-1 {
+	flex: 1;
+}
+
+#footer {
+	line-height: 51px;
+	font-size: 15px;
+	text-align: center;
+	color: white;
+	box-shadow: 4px 0px 4px #00000080;
+	height: 51px;
+	background-color: #222222;
+	bottom: 0;
+	left: 0;
+	position: fixed;
+	right: 0;
+}

@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"  lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>javaRun</title>
+</head>
+<script type="text/javascript" th:src="@{/static/js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/bootstrap-3.4.1-dist/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/layer-v3.5.1/layer/layer.js}"></script>
+<script type="text/javascript" th:src="@{/static/monaco-editor/vs/loader.js}"></script>
+<link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap-3.4.1-dist/css/bootstrap.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/static/icheck-bootstrap/icheck-bootstrap.min.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/static/css/mystyle.css}">
+<link rel="shortcut icon" th:href="@{/static/img/favicon.ico}">
+
+<body>
+<form role="form">
+    <div class="form-group d-flex flex-row flex-warp" style="padding: 0px 0px 0px 0px">
+        <div class="flex-1" style="">
+<!--            <div id="container" style="height: calc(100% - 0px); width: calc(100% - 0px);"></div>-->
+            <div id="container" style="width: 800px;height: 650px;"></div>
+        </div>
+        <div class="flex-1 col-lg-4">
+            <div style="padding: 20px 0 0 0" class="form-group clearfix">
+                <div class="icheck-success float-left">
+                    <input type="checkbox" id="timeLimitCheckBox" value="timeLimit" onclick="timeLimitClick()" name="timeLimitCheckBox">
+                    <label for="timeLimitCheckBox" style="user-select: none;">超时（ms）</label>
+                </div>
+                <input type="text" id="timeLimitInput" style="display: none;" class="form-control"
+                       placeholder="默认1000，范围0-10000">
+                <div class="icheck-success float-left">
+                    <input type="checkbox" id="argsCheckBox" onclick="argsCheckBoxClick()" name="argsCheckBox">
+                    <label for="argsCheckBox" style="user-select: none;">参数，空格隔开</label>
+                </div>
+                <input type="text" id="argsInput" style="display: none;" class="form-control"
+                       placeholder="">
+                <button onclick="doSubmit()" id="submitButton" type="button" style="width: 100%;user-select: none;margin-top: 10px;outline: none;" class="btn btn-success" aria-hidden="true">RUN</button>
+
+            </div>
+            <p></p>
+            <div style="">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">运行信息</h3>
+                    </div>
+                    <div class="" id="complieInfoDiv" style="word-spacing: 2.1px;white-space: break-spaces;margin:15px;">运行耗时：<br>编译状态：</div>
+                </div>
+            </div>
+
+            <div style="">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">运行结果</h3>
+                    </div>
+                    <div class=""  style="min-height: 270px;margin: 15px">
+                        <textarea id="resultDiv" style="width: 100%; border-radius: 0; border: 0;outline: none; min-height: 240px; resize:vertical;"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+<div id="footer">JAVA 8 程序在线运行环境</div>
+</body>
+<script>
+    var myEditor;
+    // require.config({ paths: { 'vs': '../static/monaco-editor/vs' }});
+    require.config({ paths: { 'vs': '//cdn.rawchen.com/vs' }});
+    require(['vs/editor/editor.main'], function() {
+        myEditor = monaco.editor.create(document.getElementById('container'), {
+            value: [
+                'public class Main {\n' +
+                '\tpublic static void main(String[] args) {\n' +
+                '\t\tSystem.out.println("hello world!");\n' +
+                '\t}\n' +
+                '}'
+            ].join('\n'),
+            language: 'java',
+            theme: 'vs-dark',
+            fontSize: 16,
+            scrollBeyondLastLine: false,
+        });
+    });
+
+    function doSubmit() {
+        var url = "/complie";
+        var excuteTimeLimit = $("#timeLimitInput").val().trim();
+        var excuteArgs = $("#argsInput").val().trim();
+        if ($("#timeLimitCheckBox").prop("checked")) {
+            if (excuteTimeLimit == "") {
+                excuteTimeLimit = 1000;
+            }
+        } else {
+            excuteTimeLimit = null;
+        }
+        if ($("#argsCheckBox").prop("checked")) {
+            if (excuteArgs == "") {
+                excuteArgs = null;
+            }
+        } else {
+            excuteArgs = null;
+        }
+        var data = {"javaSource": myEditor.getValue(), "excuteTimeLimit": excuteTimeLimit,"excuteArgs": excuteArgs};
+        $("#submitButton").attr('disabled', true);
+        $("#submitButton").text("Loading...");
+        $.post(url, data, function (result) {
+            // layer.msg("" + result.message);
+            $("#submitButton").attr('disabled', false);
+            $("#submitButton").text("RUN");
+            //设置执行信息
+            $("#complieInfoDiv").html("运行耗时：" + result.executeDurationTime + " ms<br>编译状态：" + result.message);
+            //设置执行结果
+            $("#resultDiv").html(result.executeResult);
+        });
+    }
+
+    function timeLimitClick() {
+        if ($("#timeLimitCheckBox").prop("checked")) {
+            $("#timeLimitInput").show();
+        } else {
+            $("#timeLimitInput").hide();
+        }
+    }
+
+    function argsCheckBoxClick() {
+        if ($("#argsCheckBox").prop("checked")) {
+            $("#argsInput").show();
+        } else {
+            $("#argsInput").hide();
+        }
+    }
+</script>
+</html>
