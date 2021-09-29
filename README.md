@@ -1,6 +1,6 @@
 # JavaRun
 
 预览地址：
-> https://rawchen.com:9999
+> https://119.23.60.193:9999
 
 JAVA 8 程序在线运行环境
