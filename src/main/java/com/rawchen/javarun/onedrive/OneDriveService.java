@@ -33,20 +33,20 @@ public class OneDriveService {
 
     public OneDriveToken getToken(String code) {
         String param = "client_id=" + getClientId() +
-                "&redirect_uri=" + getRedirectUri() +
                 "&client_secret=" + getClientSecret() +
+                "&redirect_uri=" + getRedirectUri() +
                 "&code=" + code +
                 "&scope=" + getScope() +
                 "&grant_type=authorization_code";
 
-        HttpRequest post = HttpUtil.createPost(authenticateUrl);
+        HttpRequest post = HttpUtil.createPost(getAuthenticateUrl());
 
         post.body(param, "application/x-www-form-urlencoded");
         HttpResponse response = post.execute();
         return JSONObject.parseObject(response.body(), OneDriveToken.class);
     }
 
-    public String getAuthenticateEndPoint() {
+    public String getAuthenticateUrl() {
         return authenticateUrl;
     }
 

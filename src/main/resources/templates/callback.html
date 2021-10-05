@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CallBack Result</title>
+</head>
+<body>
+
+    <h1>accessToken (访问令牌)</h1>
+    <div>
+        <input type="text" th:value="${accessToken}">
+    </div>
+
+    <h1>refreshToken (刷新令牌)</h1>
+    <div>
+        <input type="text" th:value="${refreshToken}">
+    </div>
+
+    <h1>cloudflare全内容</h1>
+    <div>
+        <textarea type="text" th:text="${cloudflare}"></textarea>
+    </div>
+
+</body>
+<style>
+    input {
+        height: 30px;
+        width: 98%;
+    }
+    textarea {
+        width: 98%;
+        min-height: 368px;
+    }
+</style>
+</html>
