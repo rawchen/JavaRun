@@ -68,13 +68,21 @@
     // require.config({ paths: { 'vs': '../static/monaco-editor/vs' }});
     require.config({ paths: { 'vs': '//cdn.rawchen.com/vs' }});
     require(['vs/editor/editor.main'], function() {
-        myEditor = monaco.editor.create(document.getElementById('container'), {
-            value: [
-                'public class Main {\n' +
+        //判断localStorage是否有之前的代码缓存，有就从那取，没有就使用定义好的helloworld。
+        var code = 'public class Main {\n' +
                 '\tpublic static void main(String[] args) {\n' +
                 '\t\tSystem.out.println("hello world!");\n' +
                 '\t}\n' +
-                '}'
+                '}';
+        if (window.localStorage.getItem('CODE_RESOURCE') != null) {
+            code = window.localStorage.getItem('CODE_RESOURCE');
+        } else {
+           // alert("NULL AND SET ORIGIN");
+        }
+
+        myEditor = monaco.editor.create(document.getElementById('container'), {
+            value: [
+                code
             ].join('\n'),
             language: 'java',
             theme: 'vs-dark',
@@ -101,6 +109,7 @@
         } else {
             excuteArgs = null;
         }
+        window.localStorage.setItem('CODE_RESOURCE',myEditor.getValue());
         var data = {"javaSource": myEditor.getValue(), "excuteTimeLimit": excuteTimeLimit,"excuteArgs": excuteArgs};
         $("#submitButton").attr('disabled', true);
         $("#submitButton").text("Loading...");
