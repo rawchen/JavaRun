@@ -104,6 +104,32 @@
                             // detail: ''
                         },
                         {
+                            label: 'if',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'if (true) {\n' +
+                                    '\t\n' +
+                                    '}'
+                        },
+                        {
+                            label: 'if else',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'if (true) {\n' +
+                                    '} else {\n' +
+                                    '\t\n' +
+                                    '}'
+                        },
+                        {
+                            label: 'if elseif else',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'if (true) {\n' +
+                                    '\t\n' +
+                                    '} else if (true) {\n' +
+                                    '\t\n' +
+                                    '} else {\n' +
+                                    '\t\n' +
+                                    '}'
+                        },
+                        {
                             label: 'List<String> list = new ArrayList<>()',
                             kind: monaco.languages.CompletionItemKind['Function'],
                             insertText: 'List<String> list = new ArrayList<>()'
@@ -209,11 +235,22 @@
                             label: 'import java.util.*',
                             kind: monaco.languages.CompletionItemKind['Function'],
                             insertText: 'import java.util.*'
+                        },
+                        {
+                            label: 'switch case',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'switch (expression) {\n' +
+                                    '\tcase value:\n' +
+                                    '\t\t\n' +
+                                    '\t\tbreak;\n' +
+                                    '\tdefault:\n' +
+                                    '\t\t\n' +
+                                    '}'
                         }
                     ]
                 };
             },
-            triggerCharacters: ['sout','new','for','.','th','tr','wh','do','im']  // 写触发提示的字符，可以有多个
+            triggerCharacters: ['sout','if','new','for','.','th','tr','wh','do','im','sw']  // 写触发提示的字符，可以有多个
         });
     });
 
