@@ -88,6 +88,132 @@
             theme: 'vs-dark',
             fontSize: 16,
             scrollBeyondLastLine: false,
+            quickSuggestions: true // 默认的提示关掉
+
+        });
+
+        // 创建代码提醒
+        monaco.languages.registerCompletionItemProvider('java', {
+            provideCompletionItems() {
+                return {
+                    suggestions: [
+                        {
+                            label: 'System.out.pringln()',
+                            kind: monaco.languages.CompletionItemKind['Function'], //这里Function也可以是别的值，主要用来显示不同的图标
+                            insertText: 'System.out.println()', // 我试了一下，如果没有此项，则无法插入
+                            // detail: ''
+                        },
+                        {
+                            label: 'List<String> list = new ArrayList<>()',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'List<String> list = new ArrayList<>()'
+
+                        },
+                        {
+                            label: 'Map<String, String> map = new HashMap<>()',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'Map<String, String> map = new HashMap<>()'
+
+                        },
+                        {
+                            label: 'Scanner sc = new Scanner(System.in)',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'Scanner sc = new Scanner(System.in)'
+
+                        },
+                        {
+                            label: 'for (int i = 0; i < ; i++){}',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'for (int i = 0; i < ; i++) {\n' +
+                                    '\t\n' +
+                                    '}',
+                            detail: '创建迭代循环'
+
+                        },
+                        {
+                            label: 'for (Object o : o){}',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'for (Object o : o) {\n' +
+                                    '\t\n' +
+                                    '}',
+                            detail: 'for (T item : expr)'
+
+                        },
+                        {
+                            label: 'valueOf()',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'valueOf()'
+
+                        },
+                        {
+                            label: 'parseInt()',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'parseInt()'
+
+                        },
+                        {
+                            label: 'toString()',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'toString()'
+
+                        },
+                        {
+                            label: 'throw new Exception()',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'throw new Exception()'
+
+                        },
+                        {
+                            label: 'throws Exception',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'throws Exception'
+
+                        },
+                        {
+                            label: 'try / catch',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'try {\n' +
+                                    '\t\n' +
+                                    '} catch (Exception e) {\n' +
+                                    '    System.out.println(e);\n' +
+                                    '}'
+
+                        },
+                        {
+                            label: 'try / catch / finally',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'try {\n' +
+                                    '\t\n' +
+                                    '} catch (Exception e) {\n' +
+                                    '    System.out.println(e);\n' +
+                                    '} finally {\n' +
+                                    '\t\n' +
+                                    '}'
+
+                        },
+                        {
+                            label: 'while(true){}',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'while (true) {\n' +
+                                    '\t\n' +
+                                    '}'
+                        },
+                        {
+                            label: 'do while',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'do {\n' +
+                                    '\t\n' +
+                                    '} while (true);'
+                        },
+                        {
+                            label: 'import java.util.*',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'import java.util.*'
+                        }
+                    ]
+                };
+            },
+            triggerCharacters: ['sout','new','for','.','th','tr','wh','do','im']  // 写触发提示的字符，可以有多个
         });
     });
 
