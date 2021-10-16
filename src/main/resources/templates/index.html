@@ -43,7 +43,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">运行信息</h3>
                     </div>
-                    <div class="" id="complieInfoDiv" style="word-spacing: 2.1px;white-space: break-spaces;margin:15px;">运行耗时：<br>编译状态：</div>
+                    <div class="" id="compileInfoDiv" style="word-spacing: 2.1px;white-space: break-spaces;margin:15px;">运行耗时：<br>编译状态：</div>
                 </div>
             </div>
 
@@ -255,25 +255,26 @@
     });
 
     function doSubmit() {
-        var url = "/complie";
-        var excuteTimeLimit = $("#timeLimitInput").val().trim();
-        var excuteArgs = $("#argsInput").val().trim();
+        var url = "/compileAndRun";
+        // var url = "/test";
+        var executeTimeLimit = $("#timeLimitInput").val().trim();
+        var executeArgs = $("#argsInput").val().trim();
         if ($("#timeLimitCheckBox").prop("checked")) {
-            if (excuteTimeLimit == "") {
-                excuteTimeLimit = 1000;
+            if (executeTimeLimit == "") {
+                executeTimeLimit = 1000;
             }
         } else {
-            excuteTimeLimit = null;
+            executeTimeLimit = null;
         }
         if ($("#argsCheckBox").prop("checked")) {
-            if (excuteArgs == "") {
-                excuteArgs = null;
+            if (executeArgs == "") {
+                executeArgs = null;
             }
         } else {
-            excuteArgs = null;
+            executeArgs = null;
         }
         window.localStorage.setItem('CODE_RESOURCE',myEditor.getValue());
-        var data = {"javaSource": myEditor.getValue(), "excuteTimeLimit": excuteTimeLimit,"excuteArgs": excuteArgs};
+        var data = {"javaSource": myEditor.getValue(), "executeTimeLimit": executeTimeLimit,"executeArgs": executeArgs};
         $("#submitButton").attr('disabled', true);
         $("#submitButton").text("Loading...");
         $.post(url, data, function (result) {
@@ -281,7 +282,7 @@
             $("#submitButton").attr('disabled', false);
             $("#submitButton").text("RUN");
             //设置执行信息
-            $("#complieInfoDiv").html("运行耗时：" + result.executeDurationTime + " ms<br>编译状态：" + result.message);
+            $("#compileInfoDiv").html("运行耗时：" + result.executeDurationTime + " ms<br>编译状态：" + result.message);
             //设置执行结果
             $("#resultDiv").html(result.executeResult);
         });

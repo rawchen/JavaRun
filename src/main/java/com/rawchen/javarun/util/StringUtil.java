@@ -31,14 +31,28 @@ public class StringUtil {
 	/**
 	 * 参数格式化为字符数组
 	 *
-	 * @param excuteArgsStr
+	 * @param executeArgsStr
 	 * @return
 	 */
-	public static String[] getInputArgs(String excuteArgsStr) {
-		if (StringUtil.isEmpty(excuteArgsStr)) {
+	public static String[] getInputArgs(String executeArgsStr) {
+		if (StringUtil.isEmpty(executeArgsStr)) {
 			return null;
 		} else {
-			return excuteArgsStr.trim().split("\\s+");
+			return executeArgsStr.trim().split("\\s+");
 		}
+	}
+
+	/**
+	 * 合并两数组
+	 *
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static String[] concat(String[] a, String[] b) {
+		String[] c= new String[a.length+b.length];
+		System.arraycopy(a, 0, c, 0, a.length);
+		System.arraycopy(b, 0, c, a.length, b.length);
+		return c;
 	}
 }

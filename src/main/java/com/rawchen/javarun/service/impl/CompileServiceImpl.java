@@ -3,8 +3,7 @@ package com.rawchen.javarun.service.impl;
 import com.rawchen.javarun.config.Constants;
 import com.rawchen.javarun.enums.ResultTypeEnum;
 import com.rawchen.javarun.exception.CompileException;
-import com.rawchen.javarun.service.ComplieService;
-import com.rawchen.javarun.util.ClassLoaderUtil;
+import com.rawchen.javarun.service.CompileService;
 import com.rawchen.javarun.vo.ResultResponse;
 import com.rawchen.javarun.vo.StringObject;
 import org.slf4j.Logger;
@@ -14,9 +13,9 @@ import org.springframework.stereotype.Service;
 import javax.tools.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -26,18 +25,17 @@ import static com.rawchen.javarun.config.Constants.className;
 import static com.rawchen.javarun.config.Constants.classPath;
 
 @Service
-public class CompileServiceImpl implements ComplieService {
+public class CompileServiceImpl implements CompileService {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * 编译代码保存为class文件
 	 *
 	 * @param javaSource JAVA代码
-	 * @return
 	 * @throws Exception
 	 */
 	@Override
-	public Class complie(String javaSource) throws Exception {
+	public void compile(String javaSource) throws Exception {
 
 		DiagnosticCollector<JavaFileObject> diagnosticsCollector = new DiagnosticCollector<>();
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
@@ -67,15 +65,53 @@ public class CompileServiceImpl implements ComplieService {
 		}
 
 		if (result) {
-			logger.info("Complied java source success!");
+			logger.info("Compiled java source success!");
 		} else {
-			logger.info("Complied java source fail!");
+			logger.info("Compiled java source fail!");
 			throw new CompileException(sb.toString());
 		}
 		//用自定义classLoader加载这个class
-		ClassLoaderUtil classClassLoader = new ClassLoaderUtil(getClass().getClassLoader());
-		Class<?> clazz = classClassLoader.loadClass(className);
-		return clazz;
+//		ClassLoaderUtil classClassLoader = new ClassLoaderUtil(getClass().getClassLoader());
+//		Class<?> clazz = classClassLoader.loadClass(className);
+//		return clazz;
+	}
+
+
+	public int executeCommandLine(final String commandLine, final long timeout)
+			throws IOException, InterruptedException, TimeoutException {
+		Runtime runtime = Runtime.getRuntime();
+		Process process = runtime.exec(commandLine);
+		/* Set up process I/O. */
+		Worker worker = new Worker(process);
+		worker.start();
+		try {
+			worker.join(timeout);
+			if (worker.exit != null)
+				return worker.exit;
+			else
+				throw new TimeoutException();
+		} catch(InterruptedException ex) {
+			worker.interrupt();
+			Thread.currentThread().interrupt();
+			throw ex;
+		} finally {
+			process.destroyForcibly();
+		}
+	}
+
+	private static class Worker extends Thread {
+		private final Process process;
+		private Integer exit;
+		private Worker(Process process) {
+			this.process = process;
+		}
+		public void run() {
+			try {
+				exit = process.waitFor();
+			} catch (InterruptedException ignore) {
+				return;
+			}
+		}
 	}
 
 	@Override
@@ -93,10 +129,19 @@ public class CompileServiceImpl implements ComplieService {
 		return excuteMainMethod(clazz, timeLimit, new String[]{});
 	}
 
+	/**
+	 * 执行类中main方法，带参数超时
+	 *
+	 * @param clazz
+	 * @param timeLimit 时间限制
+	 * @param args      运行参数数组
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public ResultResponse excuteMainMethod(Class clazz, Long timeLimit, String[] args) throws Exception {
+		//使用线程池供多用户并发使用时池化线程
 		final ExecutorService executorService = Executors.newFixedThreadPool(10);
-		List<FutureTask<ResultResponse>> futureTaskList = new ArrayList<>();
 		Callable<ResultResponse> mainMethodExcuteCallable = new Callable<ResultResponse>() {
 			@Override
 			public ResultResponse call() throws Exception {
@@ -104,46 +149,59 @@ public class CompileServiceImpl implements ComplieService {
 			}
 		};
 		FutureTask<ResultResponse> futureTask = new FutureTask<ResultResponse>(mainMethodExcuteCallable);
-		futureTaskList.add(futureTask);
-		executorService.submit(futureTask);//提交到线程池中去执行
-		//只里仅仅为了测试，这样写,把多线程当没有线程来用，意思一下
+		//提交到线程池中去执行
+		executorService.submit(futureTask);
 		ResultResponse resultResponse = null;
-		FutureTask<ResultResponse> taskItem = futureTaskList.get(0);
-//        for (FutureTask<ResultResponse> taskItem : futureTaskList) {
-		try {
-			resultResponse = taskItem.get(timeLimit, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		} catch (TimeoutException e) {
-			taskItem.cancel(true);//超时，就取消
-			e.printStackTrace();
-			throw new RuntimeException("运行超时，限定时间 " + timeLimit + " ms");
+			try {
+				resultResponse = futureTask.get(timeLimit, TimeUnit.MILLISECONDS);
+				System.out.println(resultResponse);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			} catch (TimeoutException e) {
+				futureTask.cancel(true);//超时，就取消
+				e.printStackTrace();
+				throw new RuntimeException("运行超时，限定时间 " + timeLimit + " ms");
+			}
+		executorService.shutdown();
+		while(true) {
+			if (executorService.isTerminated()) {
+				System.out.println("所有的子线程都结束了！");
+				break;
+			}
+			Thread.sleep(1000);
 		}
-//        }
+		//遇到问题：类加载器执行类方法时，如果带有new Thread()多个子线程怎么统一回调返回结果和输出。
+		//java.jsrun.net中使用Thread.currentThread().getName()知道采用的main线程，也就是可以把该类放到主程序启动。
 		return resultResponse;
 	}
 
+	/**
+	 * 执行类中main方法
+	 *
+	 * @param clazz
+	 * @param args
+	 * @return
+	 * @throws Exception
+	 */
 	private ResultResponse excuteMainMethodWithClass(Class clazz, String[] args) throws Exception {
+		//将输出结果保存在Stream
 		ByteArrayOutputStream baoStream = new ByteArrayOutputStream(1024);
 		PrintStream cacheStream = new PrintStream(baoStream);
 		PrintStream oldStream = System.out;
-		System.setOut(cacheStream);//将输出结果保持到baoStream中，以便后面用
+		System.setOut(cacheStream);
+
 		//执行main方法
 		Method method = clazz.getMethod(Constants.executeMainMethodName, String[].class);
-
-		Long startTime = System.currentTimeMillis();//开始时间
-
 		method.invoke(null, (Object) args);
+		Long startTime = System.currentTimeMillis();
+		Long endTime = System.currentTimeMillis();
 
-		Long endTime = System.currentTimeMillis();//结束时间
-
-		System.setOut(oldStream);//将输出打印到控制台
-		String reusltInfo = baoStream.toString();
+		//将输出打印到控制台
+		System.setOut(oldStream);
 		ResultResponse resultResponse = new ResultResponse();
-		resultResponse.setExecuteResult(reusltInfo);
-		System.out.println(reusltInfo);
+		resultResponse.setExecuteResult(baoStream.toString());
 		resultResponse.setExecuteDurationTime(endTime - startTime);
 		resultResponse.setResultTypeEnum(ResultTypeEnum.ok);
 		resultResponse.setMessage("OK");
@@ -157,11 +215,12 @@ public class CompileServiceImpl implements ComplieService {
 				"\t}\n" +
 				"}";
 		System.out.println(code);
-		CompileServiceImpl javaComplieService = new CompileServiceImpl();
+		CompileServiceImpl javaCompileService = new CompileServiceImpl();
 		try {
-			Class clazz = javaComplieService.complie(code);
-			ResultResponse resultResponse = javaComplieService.excuteMainMethod(clazz);
-			System.out.println("-->" + resultResponse.getExecuteResult());
+//			Class clazz = javaCompileService.compile(code);
+			javaCompileService.compile(code);
+//			ResultResponse resultResponse = javaCompileService.excuteMainMethod(clazz);
+//			System.out.println("-->" + resultResponse.getExecuteResult());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
