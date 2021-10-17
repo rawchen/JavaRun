@@ -24,7 +24,7 @@ import java.util.concurrent.TimeoutException;
 public class CompileController {
 
 	@Resource
-	private CompileService javaCompileService;
+	private CompileService service;
 
 	/**
 	 * 编译运行控制
@@ -35,8 +35,14 @@ public class CompileController {
 	@ResponseBody
 	@RequestMapping(value = "/compileAndRun")
 	public ResultResponse compileAndRun(String javaSource,
-										@RequestParam(value = "executeTimeLimit", required = false, defaultValue = "10000") Long executeTimeLimit,
-										@RequestParam(value = "executeArgs", required = false) String executeArgs) {
+			@RequestParam(value = "executeTimeLimit", required = false, defaultValue = "10000")
+					long executeTimeLimit,
+			@RequestParam(value = "executeArgs", required = false)
+					String executeArgs) {
+
+		long start;
+		long end;
+
 		try {
 			if (StringUtil.isEmpty(javaSource)) {
 				return ResultResponse.Build(ResultTypeEnum.error, "代码不能为空！");
@@ -46,103 +52,63 @@ public class CompileController {
 				return ResultResponse.Build(ResultTypeEnum.error, "代码似乎在做什么哦！");
 			}
 
-			if (executeTimeLimit != null && executeTimeLimit > 10000L) {
+			if (executeTimeLimit > 10000L) {
 				return ResultResponse.Build(ResultTypeEnum.error, "超时时间不能大于10s！");
 			}
 
-			if (executeTimeLimit != null && executeTimeLimit <= 0L) {
+			if (executeTimeLimit <= 0L) {
 				return ResultResponse.Build(ResultTypeEnum.error, "超时时间不能小于1ms！");
 			}
 
 			//编译
-			javaCompileService.compile(javaSource);
+			service.compile(javaSource);
 
-//			Class clazz = Class clazz = javaCompileService.complie(javaSource);
-//			String[] args = StringUtil.getInputArgs(executeArgs);
-
-//			if (null == executeTimeLimit && null == args) {
-//				//无参数 无时限
-//				return javaCompileService.excuteMainMethod(clazz, executeTimeLimit);
-//			} else if (null == executeTimeLimit) {
-//				//有参数 无时限
-//				return javaCompileService.excuteMainMethod(clazz, args);
-//			} else if (null == args) {
-//				//无参数 有时限
-//				if (executeTimeLimit <= 0) {
-//					return ResultResponse.Build(ResultTypeEnum.error, "超时时间不能小于1ms！");
-//				}
-//				return javaCompileService.excuteMainMethod(clazz, executeTimeLimit);
-//			} else {
-//				//有参数 有时限
-//				if (executeTimeLimit <= 0) {
-//					return ResultResponse.Build(ResultTypeEnum.error, "超时时间不能小于1ms！");
-//				}
-//				return javaCompileService.excuteMainMethod(clazz, executeTimeLimit, args);
-//			}
-//		} catch (CompileException e) {
-//			e.printStackTrace();
-//			return ResultResponse.Build(ResultTypeEnum.error, "编译错误！" + e.getMessage());
-//		} catch (RuntimeException e) {
-//			System.gc();
-//			return ResultResponse.Build(ResultTypeEnum.error, "运行错误！" + e.getMessage());
-//		} catch (Exception e) {
-//			System.gc();
-//			StringWriter sw = new StringWriter();
-//			e.printStackTrace(new PrintWriter(sw, true));
-//			return ResultResponse.Build(ResultTypeEnum.error, "运行错误！" + e.getCause());
-//		}
-
-			//判断是win还是linux
-			boolean isWin = false;
-			String os = System.getProperty("os.name");
-			if (os.toLowerCase().startsWith("win")) {
-				isWin = true;
-				System.out.println(os + " 是Win啦！");
-			}
-
-			long start;
-			long end;
-
+			//重定向系统输出流
 			ByteArrayOutputStream baoStream = new ByteArrayOutputStream(1024);
 			PrintStream cacheStream = new PrintStream(baoStream);
 			PrintStream oldStream = System.out;
 			System.setOut(cacheStream);
 
-
-			String s;
 			String[] strings;
-//			System.out.println(Constants.classPath + Constants.className);
-			start = System.currentTimeMillis();
+			String s;
+			Process process;
+			BufferedReader bufferedReaderInput;
+			BufferedReader bufferedReaderError;
 
 			//不同系统使用不同命令执行
-			if (isWin) {
-				strings = new String[]{"cmd", "/c", "E:&&cd", Constants.classPath, "&&java", Constants.className};
+			if (StringUtil.isWinOs()) {
+				strings = new String[]{"cmd", "/c", Constants.CLASS_PATH.substring(0, 2)
+						+ "&&cd", Constants.CLASS_PATH, "&&java", Constants.MEM_ARGS, Constants.CLASS_NAME};
+				//传参
+				String[] args = executeArgs.trim().split(" ");
+				String[] arrTemp = StringUtil.concat(strings, args);
+				process = Runtime.getRuntime().exec(arrTemp);
 			} else {
-				strings = new String[]{"sh", "-c", "cd", Constants.classPath, "&&java", Constants.className};
+				strings = new String[]{"sh", "-c", "java "+ Constants.MEM_ARGS + " -classpath "
+						+ Constants.CLASS_PATH + " " + Constants.CLASS_NAME + " " + executeArgs.trim()};
+				process = Runtime.getRuntime().exec(strings);
 			}
 
-			String[] args = executeArgs.trim().split(" ");
-			String[] arrTemp = StringUtil.concat(strings, args);
-			Process process = Runtime.getRuntime().exec(arrTemp);
-
+			start = System.currentTimeMillis();
 
 			if (!process.waitFor(executeTimeLimit, TimeUnit.MILLISECONDS)) {
-//				process.destroy();
+				//process.destroy();
 				process.destroyForcibly();
 				throw new TimeoutException("运行超时，限定时间 " + executeTimeLimit + " ms");
 			}
 
+			bufferedReaderInput = new BufferedReader(new InputStreamReader(process.getInputStream(), "gbk"));
+			while ((s = bufferedReaderInput.readLine()) != null) {
+				System.out.println(s);
+			}
+
+			bufferedReaderError = new BufferedReader(new InputStreamReader(process.getErrorStream(), "gbk"));
+			while ((s = bufferedReaderError.readLine()) != null) {
+				System.out.println(s);
+			}
+
 			end = System.currentTimeMillis();
 
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "gbk"));
-			while ((s = bufferedReader.readLine()) != null) {
-				System.out.println(s);
-			}
-
-			BufferedReader bufferedReader02 = new BufferedReader(new InputStreamReader(process.getErrorStream(), "gbk"));
-			while ((s = bufferedReader02.readLine()) != null) {
-				System.out.println(s);
-			}
 			System.setOut(oldStream);
 			ResultResponse result = new ResultResponse();
 			result.setExecuteResult(baoStream.toString());
@@ -150,6 +116,8 @@ public class CompileController {
 			result.setResultTypeEnum(ResultTypeEnum.ok);
 			result.setMessage("OK");
 
+			bufferedReaderInput.close();
+			bufferedReaderError.close();
 			return result;
 
 		} catch (CompileException e) {
@@ -161,17 +129,10 @@ public class CompileController {
 			System.gc();
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw, true));
-			return ResultResponse.Build(ResultTypeEnum.error, "运行错误！" + e.getCause());
+			return ResultResponse.Build(ResultTypeEnum.error, "运行错误！" + e.getMessage());
+		} finally {
+
 		}
-	}
-
-	public ResultResponse test(String javaSource,
-				@RequestParam(value = "executeTimeLimit", required = false, defaultValue = "10000") Long executeTimeLimit,
-				@RequestParam(value = "executeArgs", required = false) String executeArgs)
-			throws IOException, InterruptedException, TimeoutException {
-
-		javaCompileService.executeCommandLine("123", executeTimeLimit);
-		return new ResultResponse();
 	}
 
 	/**
@@ -184,13 +145,9 @@ public class CompileController {
 		return "index";
 	}
 
-	public static void main(String[] args) throws Exception {
-		String s;
-		System.out.println(Constants.classPath + Constants.className);
-		Process process = Runtime.getRuntime().exec(new String[]{"cmd", "/c", "E:&&cd", Constants.classPath, "&&java", Constants.className});
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream(), "gbk"));
-		while ((s = bufferedReader.readLine()) != null)
-			System.out.println(s);
-		process.waitFor();
+	public static void main(String[] args) {
+		for (int i = 1; i <= 2000; i++) {
+			System.out.println(i);
+		}
 	}
 }

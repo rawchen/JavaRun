@@ -21,12 +21,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
-import static com.rawchen.javarun.config.Constants.className;
-import static com.rawchen.javarun.config.Constants.classPath;
 
+/**
+ * 本类实际在用方法只有compile编译文本内容为class文件，其它方法是之前存在的想法，
+ * 通过类加载器加载主方法发现基础操作没问题。线程有问题。
+ * 所以换了一个Runtime的exec方法执行，相当于java Main
+ */
 @Service
 public class CompileServiceImpl implements CompileService {
+
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	Constants constants = new Constants();
 
 	/**
 	 * 编译代码保存为class文件
@@ -40,9 +45,9 @@ public class CompileServiceImpl implements CompileService {
 		DiagnosticCollector<JavaFileObject> diagnosticsCollector = new DiagnosticCollector<>();
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
 		StandardJavaFileManager standardFileManager = javaCompiler.getStandardFileManager(diagnosticsCollector, null, null);
-		StringObject so = new StringObject(className, javaSource);
+		StringObject so = new StringObject(Constants.CLASS_NAME, javaSource);
 
-		File file = new File(classPath);
+		File file = new File(Constants.CLASS_PATH);
 		if (file.exists()) {
 			if (!file.isDirectory()) {
 				file.mkdir();
@@ -51,7 +56,7 @@ public class CompileServiceImpl implements CompileService {
 			file.mkdir();
 		}
 
-		Iterable<String> options = Arrays.asList("-d", classPath);
+		Iterable<String> options = Arrays.asList("-d", Constants.CLASS_PATH);
 		Iterable<? extends JavaFileObject> files = Collections.singletonList((JavaFileObject) so);
 
 		JavaCompiler.CompilationTask task = javaCompiler.getTask(null, standardFileManager, diagnosticsCollector, options, null, files);
@@ -72,10 +77,9 @@ public class CompileServiceImpl implements CompileService {
 		}
 		//用自定义classLoader加载这个class
 //		ClassLoaderUtil classClassLoader = new ClassLoaderUtil(getClass().getClassLoader());
-//		Class<?> clazz = classClassLoader.loadClass(className);
+//		Class<?> clazz = classClassLoader.loadClass(CLASS_NAME);
 //		return clazz;
 	}
-
 
 	public int executeCommandLine(final String commandLine, final long timeout)
 			throws IOException, InterruptedException, TimeoutException {
@@ -193,7 +197,7 @@ public class CompileServiceImpl implements CompileService {
 		System.setOut(cacheStream);
 
 		//执行main方法
-		Method method = clazz.getMethod(Constants.executeMainMethodName, String[].class);
+		Method method = clazz.getMethod(Constants.EXECUTE_MAIN_METHOD_NAME, String[].class);
 		method.invoke(null, (Object) args);
 		Long startTime = System.currentTimeMillis();
 		Long endTime = System.currentTimeMillis();
@@ -206,23 +210,5 @@ public class CompileServiceImpl implements CompileService {
 		resultResponse.setResultTypeEnum(ResultTypeEnum.ok);
 		resultResponse.setMessage("OK");
 		return resultResponse;
-	}
-
-	public static void main(String[] args) {
-		String code = "public class Main {\n" +
-				"\tpublic static void main(String[] args){\n" +
-				"\t\tSystem.out.println(\"Hello World!\");\n" +
-				"\t}\n" +
-				"}";
-		System.out.println(code);
-		CompileServiceImpl javaCompileService = new CompileServiceImpl();
-		try {
-//			Class clazz = javaCompileService.compile(code);
-			javaCompileService.compile(code);
-//			ResultResponse resultResponse = javaCompileService.excuteMainMethod(clazz);
-//			System.out.println("-->" + resultResponse.getExecuteResult());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 }
