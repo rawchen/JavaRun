@@ -9,10 +9,11 @@ import java.io.File;
  */
 public class Constants {
 
-	private Constants() {
-	}
+	public final static String CLASS_NAME = "Main";
+	public final static String CLASS_PATH = System.getProperty("user.dir") + File.separator + "src" + File.separator;
+	public final static String MEM_ARGS = "-Xmx200m";
+	public final static String EXECUTE_MAIN_METHOD_NAME = "main";
 
-	public static final String className = "Main";
-	public static final String classPath = System.getProperty("user.dir") + File.separator + "src" + File.separator;
-	public static final String executeMainMethodName = "main";
+	public Constants() {
+	}
 }
