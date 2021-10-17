@@ -8,6 +8,7 @@
 <script type="text/javascript" th:src="@{/static/bootstrap-3.4.1-dist/js/bootstrap.min.js}"></script>
 <script type="text/javascript" th:src="@{/static/layer-v3.5.1/layer/layer.js}"></script>
 <script type="text/javascript" th:src="@{/static/monaco-editor/vs/loader.js}"></script>
+<script src="https://s0.pstatp.com/cdn/expire-1-M/ionicons/4.5.6/ionicons.js"></script>
 <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap-3.4.1-dist/css/bootstrap.css}">
 <link rel="stylesheet" type="text/css" th:href="@{/static/icheck-bootstrap/icheck-bootstrap.min.css}">
 <link rel="stylesheet" type="text/css" th:href="@{/static/css/mystyle.css}">
@@ -27,7 +28,7 @@
                     <label for="timeLimitCheckBox" style="user-select: none;">超时（ms）</label>
                 </div>
                 <input type="text" id="timeLimitInput" style="display: none;" class="form-control"
-                       placeholder="默认1000，范围0-10000">
+                       placeholder="默认10000，范围0-10000">
                 <div class="icheck-success float-left">
                     <input type="checkbox" id="argsCheckBox" onclick="argsCheckBoxClick()" name="argsCheckBox">
                     <label for="argsCheckBox" style="user-select: none;">参数，空格隔开</label>
@@ -61,7 +62,13 @@
     </div>
 
 </form>
-<div id="footer">JAVA 8 程序在线运行环境</div>
+<div id="footer">
+
+    <b id="nav-site">JAVA 8 程序在线运行环境</b>
+    <a class="site" id="git-branch-a" target="_black" href="https://github.com/rawchen/JavaRun" title="GitHub">
+        <ion-icon id="git-branch" name="git-branch" class="logo"></ion-icon>
+    </a>
+</div>
 </body>
 <script>
     var myEditor;
@@ -69,7 +76,7 @@
     require.config({ paths: { 'vs': '//cdn.rawchen.com/vs' }});
     require(['vs/editor/editor.main'], function() {
         //判断localStorage是否有之前的代码缓存，有就从那取，没有就使用定义好的helloworld。
-        var code = 'public class Main {\n' +
+        var code = 'class Main {\n' +
                 '\tpublic static void main(String[] args) {\n' +
                 '\t\tSystem.out.println("hello world!");\n' +
                 '\t}\n' +

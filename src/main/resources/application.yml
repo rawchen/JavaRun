@@ -29,6 +29,5 @@ spring:
     restart:
       enabled: true
       additional-paths: src/main/java
-      exclude: templates
   mvc:
     static-path-pattern: static/**
