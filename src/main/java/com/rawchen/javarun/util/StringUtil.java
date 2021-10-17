@@ -55,4 +55,14 @@ public class StringUtil {
 		System.arraycopy(b, 0, c, a.length, b.length);
 		return c;
 	}
+
+	/**
+	 * 是Win系统，不然就是linux
+	 *
+	 * @return
+	 */
+	public static boolean isWinOs() {
+		String os = System.getProperty("os.name");
+		return os.toLowerCase().startsWith("win");
+	}
 }
