@@ -105,83 +105,101 @@
                 return {
                     suggestions: [
                         {
-                            label: 'System.out.pringln()',
+                            label: 'System.out.println();',
                             kind: monaco.languages.CompletionItemKind['Function'], //这里Function也可以是别的值，主要用来显示不同的图标
-                            insertText: 'System.out.println()', // 我试了一下，如果没有此项，则无法插入
+                            insertText: 'System.out.println($0);', // 我试了一下，如果没有此项，则无法插入
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
                             // detail: ''
                         },
                         {
                             label: 'if',
                             kind: monaco.languages.CompletionItemKind['Function'],
-                            insertText: 'if (true) {\n' +
-                                    '\t\n' +
-                                    '}'
+                            insertText: 'if (${1:condition}) {\n' +
+                                    '\t$0\n' +
+                                    '}',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
                         },
                         {
                             label: 'if else',
                             kind: monaco.languages.CompletionItemKind['Function'],
-                            insertText: 'if (true) {\n' +
+                            insertText: 'if (${1:condition}) {\n' +
+                                    '\t$0\n' +
                                     '} else {\n' +
                                     '\t\n' +
-                                    '}'
+                                    '}',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
                         },
                         {
                             label: 'if elseif else',
                             kind: monaco.languages.CompletionItemKind['Function'],
-                            insertText: 'if (true) {\n' +
-                                    '\t\n' +
-                                    '} else if (true) {\n' +
+                            insertText: 'if (${1:condition}) {\n' +
+                                    '\t$0\n' +
+                                    '} else if (${2:condition}) {\n' +
                                     '\t\n' +
                                     '} else {\n' +
                                     '\t\n' +
-                                    '}'
-                        },
-                        {
-                            label: 'List<String> list = new ArrayList<>()',
-                            kind: monaco.languages.CompletionItemKind['Function'],
-                            insertText: 'List<String> list = new ArrayList<>()'
-
-                        },
-                        {
-                            label: 'Map<String, String> map = new HashMap<>()',
-                            kind: monaco.languages.CompletionItemKind['Function'],
-                            insertText: 'Map<String, String> map = new HashMap<>()'
-
-                        },
-                        {
-                            label: 'Scanner sc = new Scanner(System.in)',
-                            kind: monaco.languages.CompletionItemKind['Function'],
-                            insertText: 'Scanner sc = new Scanner(System.in)'
-
-                        },
-                        {
-                            label: 'for (int i = 0; i < ; i++){}',
-                            kind: monaco.languages.CompletionItemKind['Function'],
-                            insertText: 'for (int i = 0; i < ; i++) {\n' +
-                                    '\t\n' +
                                     '}',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                        },
+                        {
+                            label: 'List<> list = new ArrayList<>();',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'List<${1:String}> list = new ArrayList<>();',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+
+                        },
+                        {
+                            label: 'Map<,> map = new HashMap<>();',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'Map<${1:String}, ${2:String}> map = new HashMap<>();',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+
+                        },
+                        {
+                            label: 'Set<> set = new HashSet<>();',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'Set<${1:String}> set = new HashSet<>();',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+
+                        },
+                        {
+                            label: 'Scanner sc = new Scanner(System.in);',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'Scanner sc = new Scanner(System.in);'
+
+                        },
+                        {
+                            label: 'for (int i = 0; i < x; i++){}',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'for (int i = ${1:}; i < ${2:}; i++) {\n' +
+                                    '\t$0\n' +
+                                    '}',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
                             detail: '创建迭代循环'
 
                         },
                         {
                             label: 'for (Object o : o){}',
                             kind: monaco.languages.CompletionItemKind['Function'],
-                            insertText: 'for (Object o : o) {\n' +
-                                    '\t\n' +
+                            insertText: 'for (${1:Object} o : o) {\n' +
+                                    '\t$0\n' +
                                     '}',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
                             detail: 'for (T item : expr)'
 
                         },
                         {
                             label: 'valueOf()',
                             kind: monaco.languages.CompletionItemKind['Function'],
-                            insertText: 'valueOf()'
+                            insertText: 'valueOf($0)',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
 
                         },
                         {
                             label: 'parseInt()',
                             kind: monaco.languages.CompletionItemKind['Function'],
-                            insertText: 'parseInt()'
+                            insertText: 'parseInt($0)',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
 
                         },
                         {
@@ -193,7 +211,8 @@
                         {
                             label: 'throw new Exception()',
                             kind: monaco.languages.CompletionItemKind['Function'],
-                            insertText: 'throw new Exception()'
+                            insertText: 'throw new Exception($0);',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
 
                         },
                         {
@@ -206,53 +225,58 @@
                             label: 'try / catch',
                             kind: monaco.languages.CompletionItemKind['Function'],
                             insertText: 'try {\n' +
-                                    '\t\n' +
+                                    '\t$0\n' +
                                     '} catch (Exception e) {\n' +
                                     '    System.out.println(e);\n' +
-                                    '}'
+                                    '}',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
 
                         },
                         {
                             label: 'try / catch / finally',
                             kind: monaco.languages.CompletionItemKind['Function'],
                             insertText: 'try {\n' +
-                                    '\t\n' +
+                                    '\t$0\n' +
                                     '} catch (Exception e) {\n' +
                                     '    System.out.println(e);\n' +
                                     '} finally {\n' +
                                     '\t\n' +
-                                    '}'
+                                    '}',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
 
                         },
                         {
-                            label: 'while(true){}',
+                            label: 'while(condition){}',
                             kind: monaco.languages.CompletionItemKind['Function'],
-                            insertText: 'while (true) {\n' +
-                                    '\t\n' +
-                                    '}'
+                            insertText: 'while (${1:condition}) {\n' +
+                                    '\t$0\n' +
+                                    '}',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
                         },
                         {
                             label: 'do while',
                             kind: monaco.languages.CompletionItemKind['Function'],
                             insertText: 'do {\n' +
-                                    '\t\n' +
-                                    '} while (true);'
+                                    '\t$0\n' +
+                                    '} while (${1:condition});',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
                         },
                         {
-                            label: 'import java.util.*',
+                            label: 'import java.util.*;',
                             kind: monaco.languages.CompletionItemKind['Function'],
-                            insertText: 'import java.util.*'
+                            insertText: 'import java.util.*;'
                         },
                         {
                             label: 'switch case',
                             kind: monaco.languages.CompletionItemKind['Function'],
-                            insertText: 'switch (expression) {\n' +
-                                    '\tcase value:\n' +
-                                    '\t\t\n' +
+                            insertText: 'switch (${1:condition}) {\n' +
+                                    '\tcase ${2:value}:\n' +
+                                    '\t\t$0\n' +
                                     '\t\tbreak;\n' +
                                     '\tdefault:\n' +
                                     '\t\t\n' +
-                                    '}'
+                                    '}',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
                         }
                     ]
                 };
