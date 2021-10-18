@@ -97,12 +97,12 @@ public class CompileController {
 				throw new TimeoutException("运行超时，限定时间 " + executeTimeLimit + " ms");
 			}
 
-			bufferedReaderInput = new BufferedReader(new InputStreamReader(process.getInputStream(), "gbk"));
+			bufferedReaderInput = new BufferedReader(new InputStreamReader(process.getInputStream(), StringUtil.isWinOs()?"gbk":"utf-8"));
 			while ((s = bufferedReaderInput.readLine()) != null) {
 				System.out.println(s);
 			}
 
-			bufferedReaderError = new BufferedReader(new InputStreamReader(process.getErrorStream(), "gbk"));
+			bufferedReaderError = new BufferedReader(new InputStreamReader(process.getErrorStream(), StringUtil.isWinOs()?"gbk":"utf-8"));
 			while ((s = bufferedReaderError.readLine()) != null) {
 				System.out.println(s);
 			}
