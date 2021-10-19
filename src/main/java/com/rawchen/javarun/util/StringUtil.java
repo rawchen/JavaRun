@@ -37,12 +37,7 @@ public class StringUtil {
 	 */
 	public static boolean isLinuxAndIOOperation(String javaSource) {
 		if (!StringUtil.isWinOs()) {
-			if ("new File".equals(javaSource)) {
-				return true;
-			}
-			if ("Class.forName".equals(javaSource)) {
-				return true;
-			}
+			return "new File".equals(javaSource) || "Class.forName".equals(javaSource);
 		}
 		return false;
 	}
