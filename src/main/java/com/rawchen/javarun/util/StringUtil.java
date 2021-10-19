@@ -22,10 +22,29 @@ public class StringUtil {
 	 * @param javaSource
 	 * @return
 	 */
-	public static boolean isDangerous(String javaSource) {
-		return javaSource.contains("exec(") &&
-				javaSource.contains("Runtime") &&
-				javaSource.contains("Process");
+	public static boolean isLinuxAndDangerous(String javaSource) {
+		return !StringUtil.isWinOs()
+				&& javaSource.contains("exec(")
+				&& javaSource.contains("Runtime")
+				&& javaSource.contains("Process");
+	}
+
+	/**
+	 * 判断是否在linux进行IO操作
+	 *
+	 * @param javaSource
+	 * @return
+	 */
+	public static boolean isLinuxAndIOOperation(String javaSource) {
+		if (!StringUtil.isWinOs()) {
+			if ("new File".equals(javaSource)) {
+				return true;
+			}
+			if ("Class.forName".equals(javaSource)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
