@@ -25,8 +25,7 @@ public class StringUtil {
 	public static boolean isLinuxAndDangerous(String javaSource) {
 		return !StringUtil.isWinOs()
 				&& javaSource.contains("exec(")
-				&& javaSource.contains("Runtime")
-				&& javaSource.contains("Process");
+				&& javaSource.contains("Runtime");
 	}
 
 	/**
@@ -36,10 +35,9 @@ public class StringUtil {
 	 * @return
 	 */
 	public static boolean isLinuxAndIOOperation(String javaSource) {
-		if (!StringUtil.isWinOs()) {
-			return "new File".equals(javaSource) || "Class.forName".equals(javaSource);
-		}
-		return false;
+		return !StringUtil.isWinOs()
+				&& (javaSource.contains("new File")
+				|| javaSource.contains("Class.forName"));
 	}
 
 	/**
