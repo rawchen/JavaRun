@@ -4,6 +4,7 @@ import com.rawchen.javarun.config.Constants;
 import com.rawchen.javarun.enums.ResultTypeEnum;
 import com.rawchen.javarun.exception.CompileException;
 import com.rawchen.javarun.service.CompileService;
+import com.rawchen.javarun.util.FileUtil;
 import com.rawchen.javarun.util.StringUtil;
 import com.rawchen.javarun.vo.ResultResponse;
 import org.springframework.stereotype.Controller;
@@ -94,6 +95,7 @@ public class CompileController {
 			if (!process.waitFor(executeTimeLimit, TimeUnit.MILLISECONDS)) {
 				//process.destroy();
 				process.destroyForcibly();
+				FileUtil.deleteClassFileForDir(Constants.CLASS_PATH);
 				throw new TimeoutException("运行超时，限定时间 " + executeTimeLimit + " ms");
 			}
 
@@ -131,7 +133,7 @@ public class CompileController {
 			e.printStackTrace(new PrintWriter(sw, true));
 			return ResultResponse.Build(ResultTypeEnum.error, "运行错误！" + e.getMessage());
 		} finally {
-
+			FileUtil.deleteClassFileForDir(Constants.CLASS_PATH);
 		}
 	}
 
