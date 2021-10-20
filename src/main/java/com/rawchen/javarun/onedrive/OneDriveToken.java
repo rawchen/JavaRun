@@ -3,6 +3,9 @@ package com.rawchen.javarun.onedrive;
 import com.alibaba.fastjson.annotation.JSONField;
 
 /**
+ * 此包为OneDrive的FODI列表程序相关类。
+ * 生成token与cf所需代码。
+ *
  * @author RawChen
  */
 public class OneDriveToken {

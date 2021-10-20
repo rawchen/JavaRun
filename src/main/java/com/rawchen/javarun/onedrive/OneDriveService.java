@@ -10,6 +10,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
+ * 此包为OneDrive的FODI列表程序相关类。
+ * 生成token与cf所需代码。
+ *
  * @author RawChen
  */
 @Service

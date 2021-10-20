@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 
 /**
+ * 此包为OneDrive的FODI列表程序相关类。
+ * 生成token与cf所需代码。
+ *
  * @author RawChen
  */
 @Controller
