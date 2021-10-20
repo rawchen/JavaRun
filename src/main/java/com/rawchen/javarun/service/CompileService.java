@@ -22,7 +22,7 @@ public interface CompileService {
 	 * @param clazz 编译后的CLASS
 	 * @return 执行结果
 	 */
-	ResultResponse excuteMainMethod(Class clazz) throws Exception;
+	ResultResponse executeMainMethod(Class clazz) throws Exception;
 
 	/**
 	 * 执行MAIN方法
@@ -31,14 +31,14 @@ public interface CompileService {
 	 * @param args  运行参数数组
 	 * @return 执行结果
 	 */
-	ResultResponse excuteMainMethod(Class clazz, String[] args) throws Exception;
+	ResultResponse executeMainMethod(Class clazz, String[] args) throws Exception;
 
 	/**
 	 * 执行MAIN方法
 	 *
 	 * @param timeLimit 时间限制
 	 */
-	ResultResponse excuteMainMethod(Class clazz, Long timeLimit) throws Exception;
+	ResultResponse executeMainMethod(Class clazz, Long timeLimit) throws Exception;
 
 	/**
 	 * 执行MAIN方法
@@ -46,7 +46,7 @@ public interface CompileService {
 	 * @param timeLimit 时间限制
 	 * @param args      运行参数数组
 	 */
-	ResultResponse excuteMainMethod(Class clazz, Long timeLimit, String[] args) throws Exception;
+	ResultResponse executeMainMethod(Class clazz, Long timeLimit, String[] args) throws Exception;
 
 	/**
 	 * 运行Main.class
