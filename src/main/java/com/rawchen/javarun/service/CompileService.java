@@ -47,4 +47,12 @@ public interface CompileService {
 	 * @param args      运行参数数组
 	 */
 	ResultResponse excuteMainMethod(Class clazz, Long timeLimit, String[] args) throws Exception;
+
+	/**
+	 * 运行Main.class
+	 *
+	 * @return
+	 */
+	ResultResponse run(long executeTimeLimit, String executeArgs) throws Exception;
+
 }

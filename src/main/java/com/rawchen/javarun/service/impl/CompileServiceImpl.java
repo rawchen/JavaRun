@@ -4,6 +4,8 @@ import com.rawchen.javarun.config.Constants;
 import com.rawchen.javarun.enums.ResultTypeEnum;
 import com.rawchen.javarun.exception.CompileException;
 import com.rawchen.javarun.service.CompileService;
+import com.rawchen.javarun.util.FileUtil;
+import com.rawchen.javarun.util.StringUtil;
 import com.rawchen.javarun.vo.ResultResponse;
 import com.rawchen.javarun.vo.StringObject;
 import org.slf4j.Logger;
@@ -11,10 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.tools.*;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +31,9 @@ public class CompileServiceImpl implements CompileService {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	Constants constants = new Constants();
+
+	long start;
+	long end;
 
 	/**
 	 * 编译代码保存为class文件
@@ -179,6 +181,68 @@ public class CompileServiceImpl implements CompileService {
 		//遇到问题：类加载器执行类方法时，如果带有new Thread()多个子线程怎么统一回调返回结果和输出。
 		//java.jsrun.net中使用Thread.currentThread().getName()知道采用的main线程，也就是可以把该类放到主程序启动。
 		return resultResponse;
+	}
+
+	@Override
+	public ResultResponse run(long executeTimeLimit, String executeArgs) throws Exception {
+		//重定向系统输出流
+		ByteArrayOutputStream baoStream = new ByteArrayOutputStream(1024);
+		PrintStream cacheStream = new PrintStream(baoStream);
+		PrintStream oldStream = System.out;
+		System.setOut(cacheStream);
+
+		String[] strings;
+		String s;
+		Process process;
+		BufferedReader bufferedReaderInput;
+		BufferedReader bufferedReaderError;
+
+		//不同系统使用不同命令执行
+		if (StringUtil.isWinOs()) {
+			strings = new String[]{"cmd", "/c", Constants.CLASS_PATH.substring(0, 2)
+					+ "&&cd", Constants.CLASS_PATH, "&&java", Constants.MEM_ARGS, Constants.CLASS_NAME};
+			//传参
+			String[] args = executeArgs.trim().split(" ");
+			String[] arrTemp = StringUtil.concat(strings, args);
+			process = Runtime.getRuntime().exec(arrTemp);
+		} else {
+			strings = new String[]{"sh", "-c", "java "+ Constants.MEM_ARGS + " -classpath "
+					+ Constants.CLASS_PATH + " " + Constants.CLASS_NAME + " " + executeArgs.trim()};
+			process = Runtime.getRuntime().exec(strings);
+		}
+
+		start = System.currentTimeMillis();
+
+		if (!process.waitFor(executeTimeLimit, TimeUnit.MILLISECONDS)) {
+			//process.destroy();
+			process.destroyForcibly();
+			FileUtil.deleteClassFileForDir(Constants.CLASS_PATH);
+			throw new TimeoutException();
+		}
+
+		bufferedReaderInput = new BufferedReader(new InputStreamReader(process.getInputStream(), StringUtil.isWinOs()?"gbk":"utf-8"));
+		while ((s = bufferedReaderInput.readLine()) != null) {
+			System.out.println(s);
+		}
+
+		bufferedReaderError = new BufferedReader(new InputStreamReader(process.getErrorStream(), StringUtil.isWinOs()?"gbk":"utf-8"));
+		while ((s = bufferedReaderError.readLine()) != null) {
+			System.out.println(s);
+		}
+
+		end = System.currentTimeMillis();
+
+		System.setOut(oldStream);
+		ResultResponse result = new ResultResponse();
+		result.setExecuteResult(baoStream.toString());
+		result.setExecuteDurationTime(end - start);
+		result.setResultTypeEnum(ResultTypeEnum.ok);
+		result.setMessage("OK");
+
+		bufferedReaderInput.close();
+		bufferedReaderError.close();
+
+		return result;
 	}
 
 	/**

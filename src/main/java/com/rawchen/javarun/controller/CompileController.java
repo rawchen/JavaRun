@@ -11,8 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.io.*;
-import java.util.concurrent.TimeUnit;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -40,10 +40,6 @@ public class CompileController {
 					long executeTimeLimit,
 			@RequestParam(value = "executeArgs", required = false)
 					String executeArgs) {
-
-		long start;
-		long end;
-
 		try {
 			if (StringUtil.isEmpty(javaSource)) {
 				return ResultResponse.Build(ResultTypeEnum.error, "代码不能为空！");
@@ -63,64 +59,8 @@ public class CompileController {
 
 			//编译
 			service.compile(javaSource);
-
-			//重定向系统输出流
-			ByteArrayOutputStream baoStream = new ByteArrayOutputStream(1024);
-			PrintStream cacheStream = new PrintStream(baoStream);
-			PrintStream oldStream = System.out;
-			System.setOut(cacheStream);
-
-			String[] strings;
-			String s;
-			Process process;
-			BufferedReader bufferedReaderInput;
-			BufferedReader bufferedReaderError;
-
-			//不同系统使用不同命令执行
-			if (StringUtil.isWinOs()) {
-				strings = new String[]{"cmd", "/c", Constants.CLASS_PATH.substring(0, 2)
-						+ "&&cd", Constants.CLASS_PATH, "&&java", Constants.MEM_ARGS, Constants.CLASS_NAME};
-				//传参
-				String[] args = executeArgs.trim().split(" ");
-				String[] arrTemp = StringUtil.concat(strings, args);
-				process = Runtime.getRuntime().exec(arrTemp);
-			} else {
-				strings = new String[]{"sh", "-c", "java "+ Constants.MEM_ARGS + " -classpath "
-						+ Constants.CLASS_PATH + " " + Constants.CLASS_NAME + " " + executeArgs.trim()};
-				process = Runtime.getRuntime().exec(strings);
-			}
-
-			start = System.currentTimeMillis();
-
-			if (!process.waitFor(executeTimeLimit, TimeUnit.MILLISECONDS)) {
-				//process.destroy();
-				process.destroyForcibly();
-				FileUtil.deleteClassFileForDir(Constants.CLASS_PATH);
-				throw new TimeoutException("运行超时，限定时间 " + executeTimeLimit + " ms");
-			}
-
-			bufferedReaderInput = new BufferedReader(new InputStreamReader(process.getInputStream(), StringUtil.isWinOs()?"gbk":"utf-8"));
-			while ((s = bufferedReaderInput.readLine()) != null) {
-				System.out.println(s);
-			}
-
-			bufferedReaderError = new BufferedReader(new InputStreamReader(process.getErrorStream(), StringUtil.isWinOs()?"gbk":"utf-8"));
-			while ((s = bufferedReaderError.readLine()) != null) {
-				System.out.println(s);
-			}
-
-			end = System.currentTimeMillis();
-
-			System.setOut(oldStream);
-			ResultResponse result = new ResultResponse();
-			result.setExecuteResult(baoStream.toString());
-			result.setExecuteDurationTime(end - start);
-			result.setResultTypeEnum(ResultTypeEnum.ok);
-			result.setMessage("OK");
-
-			bufferedReaderInput.close();
-			bufferedReaderError.close();
-			return result;
+			//运行
+			return service.run(executeTimeLimit, executeArgs);
 
 		} catch (CompileException e) {
 			e.printStackTrace();
@@ -145,11 +85,5 @@ public class CompileController {
 	@GetMapping(value = {"/", "/index"})
 	public String index() {
 		return "index";
-	}
-
-	public static void main(String[] args) {
-		for (int i = 1; i <= 2000; i++) {
-			System.out.println(i);
-		}
 	}
 }
