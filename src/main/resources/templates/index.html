@@ -16,12 +16,15 @@
 
 <body>
 <form role="form">
-    <div class="form-group d-flex flex-row flex-warp" style="padding: 0px 0px 0px 0px">
-        <div class="flex-1" style="">
+    <div class="form-group d-flex" style="padding: 0px 0px 0px 0px">
+        <div style="width: 66.66666667%;">
 <!--            <div id="container" style="height: calc(100% - 0px); width: calc(100% - 0px);"></div>-->
-            <div id="container" style="width: 800px;height: 650px;"></div>
+            <div id="parent-container" style="height: calc(90vh);"><!-- 800 650 -->
+                <div id="container" style="height: 100%;">
+                </div>
+            </div>
         </div>
-        <div class="flex-1 col-lg-4">
+        <div style="width: 33.33333333%; padding: 0 11px;">
             <div style="padding: 20px 0 0 0" class="form-group clearfix">
                 <div class="icheck-success float-left">
                     <input type="checkbox" id="timeLimitCheckBox" value="timeLimit" onclick="timeLimitClick()" name="timeLimitCheckBox">
@@ -53,7 +56,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">运行结果</h3>
                     </div>
-                    <div class=""  style="min-height: 270px;margin: 15px">
+                    <div class=""  style="min-height: 250px;margin: 15px">
                         <textarea id="resultDiv" style="width: 100%; border-radius: 0; border: 0;outline: none; min-height: 240px; resize:vertical;"></textarea>
                     </div>
                 </div>
@@ -95,7 +98,9 @@
             theme: 'vs-dark',
             fontSize: 16,
             scrollBeyondLastLine: false,
-            quickSuggestions: true // 默认的提示关掉
+            quickSuggestions: true,
+            autoClosingBrackets: true,
+            automaticLayout: true
 
         });
 
