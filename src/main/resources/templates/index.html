@@ -13,18 +13,21 @@
 <link rel="stylesheet" type="text/css" th:href="@{/static/icheck-bootstrap/icheck-bootstrap.min.css}">
 <link rel="stylesheet" type="text/css" th:href="@{/static/css/mystyle.css}">
 <link rel="shortcut icon" th:href="@{/static/img/favicon.ico}">
+<style>
+
+</style>
 
 <body>
 <form role="form">
-    <div class="form-group d-flex" style="padding: 0px 0px 0px 0px">
-        <div style="width: 66.66666667%;">
-<!--            <div id="container" style="height: calc(100% - 0px); width: calc(100% - 0px);"></div>-->
-            <div id="parent-container" style="height: calc(90vh);"><!-- 800 650 -->
+    <div class="form-group d-flex father" style="padding: 0px 0px 0px 0px">
+        <div id="leftChild">
+            <div id="parent-container" style="height: calc(90vh);">
                 <div id="container" style="height: 100%;">
                 </div>
             </div>
         </div>
-        <div style="width: 33.33333333%; padding: 0 11px;">
+        <div id="line"></div>
+        <div id="rightChild">
             <div style="padding: 20px 0 0 0" class="form-group clearfix">
                 <div class="icheck-success float-left">
                     <input type="checkbox" id="timeLimitCheckBox" value="timeLimit" onclick="timeLimitClick()" name="timeLimitCheckBox">
@@ -338,6 +341,30 @@
         } else {
             $("#argsInput").hide();
         }
+    }
+
+    const leftChild = document.getElementById('leftChild');
+    const oLine = document.getElementById('line');
+    const rightChild = document.getElementById('rightChild');
+    oLine.onmousedown = function(ev){
+        var iEvent = ev||event;
+        var dx = iEvent.clientX;//当你第一次单击的时候，存储x轴的坐标。//相对于浏览器窗口
+        var leftWidth = leftChild.offsetWidth;
+        var rightWidth = rightChild.offsetWidth;
+        document.onmousemove = function(ev){
+            var iEvent = ev||event;
+            var diff = iEvent.clientX - dx;//移动的距离（向左滑时为负数,右滑时为正数）
+            if(100 < (leftWidth + diff)  &&  100 < (rightWidth - diff)){
+                //两个div的最小宽度均为100px
+                leftChild.style.width = (leftWidth + diff) +'px';
+                rightChild.style.width = (rightWidth - diff) +'px';
+            }
+        };
+        document.onmouseup=function(){
+            document.onmousedown = null;
+            document.onmousemove = null;
+        };
+        return false;
     }
 </script>
 </html>
