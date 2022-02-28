@@ -1,4 +1,4 @@
-package com.rawchen.javarun.onedrive;
+package com.rawchen.javarun.modules.onedrive;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -1,4 +1,4 @@
-package com.rawchen.javarun.onedrive;
+package com.rawchen.javarun.modules.onedrive;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
