@@ -46,7 +46,7 @@ public class CompileController {
 			}
 
 			if (StringUtil.isLinuxAndDangerous(javaSource) || StringUtil.isLinuxAndIOOperation(javaSource)) {
-				return ResultResponse.Build(ResultTypeEnum.error, "代码似乎在做什么哦，下方链接提供release的jar包。请用win执行！");
+				return ResultResponse.Build(ResultTypeEnum.error, "代码似乎在做什么哦，IO操作请打开IDEA！");
 			}
 
 			if (executeTimeLimit > 10000L) {
