@@ -120,6 +120,14 @@
                             // detail: ''
                         },
                         {
+                            label: 'main',
+                            kind: monaco.languages.CompletionItemKind['Function'],
+                            insertText: 'public static void main(String[] args) {\n' +
+                                    '\t$0\n' +
+                                    '}',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                        },
+                        {
                             label: 'if',
                             kind: monaco.languages.CompletionItemKind['Function'],
                             insertText: 'if (${1:condition}) {\n' +
