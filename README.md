@@ -1,16 +1,9 @@
 # JavaRun
-
 JAVA 8 程序在线运行环境
 
 ## 预览地址
-
 https://java.rawchen.com
 
-## 快速开始
-
-访问 https://github.com/rawchen/JavaRun/releases
-
-下载jar包运行即可，也可拉取源码自行打包
 
 ## 开发环境
 SpringBoot 2.5.5 + Thymeleaf
