@@ -324,14 +324,20 @@
         var data = {"javaSource": myEditor.getValue(), "executeTimeLimit": executeTimeLimit,"executeArgs": executeArgs};
         $("#submitButton").attr('disabled', true);
         $("#submitButton").text("Loading...");
-        $.post(url, data, function (result) {
-            // layer.msg("" + result.message);
-            $("#submitButton").attr('disabled', false);
-            $("#submitButton").text("RUN");
-            //设置执行信息
-            $("#compileInfoDiv").html("运行耗时：" + result.executeDurationTime + " ms<br>编译状态：" + result.message);
-            //设置执行结果
-            $("#resultDiv").html(result.executeResult);
+        $.ajax({
+            //几个参数需要注意一下
+            type: "POST",//方法类型
+            dataType: "json",//预期服务器返回的数据类型
+            url: url,
+            data: data,
+            success: function (result) {
+                $("#submitButton").attr('disabled', false);
+                $("#submitButton").text("RUN");
+                //设置执行信息
+                $("#compileInfoDiv").html("运行耗时：" + result.executeDurationTime + " ms<br>编译状态：" + result.message);
+                //设置执行结果
+                $("#resultDiv").val(result.executeResult);
+            }
         });
     }
 

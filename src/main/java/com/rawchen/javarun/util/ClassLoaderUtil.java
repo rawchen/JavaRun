@@ -16,7 +16,7 @@ import java.nio.channels.WritableByteChannel;
  * @desc 自定义classLoader, 用来加载动态编译好的CLASS文件
  */
 public class ClassLoaderUtil extends ClassLoader {
-	private final String path = new Constants().CLASS_PATH;
+	private final String path = Constants.CLASS_PATH;
 
 	public ClassLoaderUtil(ClassLoader parent) {
 		super(parent);
