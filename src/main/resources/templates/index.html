@@ -86,11 +86,12 @@
     require.config({ paths: { 'vs': '//cdn.rawchen.com/vs' }});
     require(['vs/editor/editor.main'], function() {
         //判断localStorage是否有之前的代码缓存，有就从那取，没有就使用定义好的helloworld。
-        var code = 'class Main {\n' +
-                '\tpublic static void main(String[] args) {\n' +
-                '\t\tSystem.out.println("hello world!");\n' +
-                '\t}\n' +
-                '}';
+        var code = 'import java.util.*;\n\n'
+                 + 'class Main {\n'
+                 + '\tpublic static void main(String[] args) {\n'
+                 + '\t\tSystem.out.println("hello world!");\n'
+                 + '\t}\n'
+                 + '}';
         if (window.localStorage.getItem('CODE_RESOURCE') != null) {
             code = window.localStorage.getItem('CODE_RESOURCE');
         } else {
