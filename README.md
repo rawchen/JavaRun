@@ -24,3 +24,10 @@ SpringBoot 2.5.5 + Thymeleaf
 1. 流重定向问题，包括process的异常、输入流
 2. Runtime的exec问题
 3. 处理各种异常和错误
+
+### 使用说明
+如需部署，请自行下载`monaco-editor`到`static`文件夹。
+并更改`cdn.rawchen.com/vs`为`../static/monaco-editor/vs`。
+下载地址：[https://microsoft.github.io/monaco-editor](https://microsoft.github.io/monaco-editor)
+<br>
+解压出/package/min/vs即可。
