@@ -36,12 +36,12 @@ body{
 }
 
 #footer {
-	line-height: 51px;
+	line-height: 4vh;
 	font-size: 17px;
 	text-align: center;
 	color: white;
 	box-shadow: 4px 0px 4px #00000080;
-	height: 53px;
+	height: 4vh;
 	background-color: #222222;
 	bottom: 0;
 	left: 0;
@@ -102,6 +102,7 @@ ion-icon {
 	overflow: hidden;
 }
 #leftChild{
+	background-color: #1e1e1e;
 	width: 66.66666667%;
 	float: left;
 	height: 100%;
