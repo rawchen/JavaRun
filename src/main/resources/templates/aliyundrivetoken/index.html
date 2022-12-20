@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+	<meta name="renderer" content="webkit">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta http-equiv="Cache-Control" content="no-transform"/>
+	<link rel="shortcut icon" th:href="@{/static/img/favicon.ico}">
+	<script type="text/javascript" th:src="@{/static/js/jquery.min.js}"></script>
+	<title>Token</title>
+</head>
+<body>
+<h1>
+	<h5 th:text="${codeContent}"></h5>
+	<h5 th:text="${t}"></h5>
+	<h5 th:text="${ck}"></h5>
+	<h5 id="token"></h5>
+	<img th:src="${qrcode}" style="width: 300px; height: 300px">
+</h1>
+</body>
+<script>
+	var url = "/api/aliyundrivetoken/query";
+	var data = {"t": "[[${t}]]", "ck": "[[${ck}]]"};
+	setInterval(function () {
+		$.ajax({
+			type: "POST",
+			// dataType: "json",//预期服务器返回的数据类型
+			url: url,
+			data: data,
+			success: function (result) {
+				$("#token").val(result.toString());
+			}
+		});
+	}, 5000);
+
+</script>
+</html>

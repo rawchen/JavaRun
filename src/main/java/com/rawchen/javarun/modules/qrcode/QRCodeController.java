@@ -23,7 +23,6 @@ import java.util.Hashtable;
  * @date 2022-02-28 17:39
  */
 @Controller
-@RequestMapping(value = "/qrcode")
 public class QRCodeController {
 
 	/**
@@ -35,7 +34,7 @@ public class QRCodeController {
 	 * @param response
 	 * @throws Exception
 	 */
-	@RequestMapping(path = "/api", method = RequestMethod.GET)
+	@RequestMapping(path = "/api/qrcode", method = RequestMethod.GET)
 	@ResponseBody
 	public void createQRCode(@RequestParam(name = "url") String data,
 							 @RequestParam(name = "h", defaultValue = "290", required = false) Integer height,

@@ -14,7 +14,7 @@ import javax.annotation.Resource;
  * @author RawChen
  */
 @Controller
-@RequestMapping(value = "/onedrive")
+@RequestMapping(value = "/api/onedrive")
 public class OneDriveCallbackController {
 
     @Resource
