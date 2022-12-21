@@ -1,7 +1,7 @@
 onedrive:
   clientId: 6d027ece-1899-4c3e-8239-6eae511f0964
   clientSecret: hSf7Q~CKP5pT8HHX_WGAhzCmxOU4JSYfJ3l2y
-  redirectUri: https://java.rawchen.com/onedrive/callback
+  redirectUri: https://api.rawchen.com/onedrive/callback
   scope: offline_access User.Read Files.ReadWrite.All
   authenticateUrl: https://login.microsoftonline.com/common/oauth2/v2.0/token
 
