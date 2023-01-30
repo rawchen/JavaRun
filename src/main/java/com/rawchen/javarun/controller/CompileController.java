@@ -45,8 +45,8 @@ public class CompileController {
 				return ResultResponse.Build(ResultTypeEnum.error, "代码不能为空！");
 			}
 
-			if (StringUtil.isLinuxAndDangerous(javaSource) || StringUtil.isLinuxAndIOOperation(javaSource)) {
-				return ResultResponse.Build(ResultTypeEnum.error, "代码似乎在做什么哦，IO操作请打开IDEA！");
+			if (StringUtil.isDangerousWithLinux(javaSource)) {
+				return ResultResponse.Build(ResultTypeEnum.error, "代码似乎在做什么哦！");
 			}
 
 			if (executeTimeLimit > 10000L) {

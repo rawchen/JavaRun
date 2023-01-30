@@ -17,27 +17,24 @@ public class StringUtil {
 	}
 
 	/**
-	 * 传入代码是否安全
+	 * 传入代码是否危险
 	 *
 	 * @param javaSource
 	 * @return
 	 */
-	public static boolean isLinuxAndDangerous(String javaSource) {
-		return !StringUtil.isWinOs()
-				&& javaSource.contains("exec(")
-				&& javaSource.contains("Runtime");
-	}
-
-	/**
-	 * 判断是否在linux进行IO操作
-	 *
-	 * @param javaSource
-	 * @return
-	 */
-	public static boolean isLinuxAndIOOperation(String javaSource) {
-		return !StringUtil.isWinOs()
-				&& (javaSource.contains("new File")
-				|| javaSource.contains("Class.forName"));
+	public static boolean isDangerousWithLinux(String javaSource) {
+		javaSource = javaSource.trim();
+		if (!StringUtil.isWinOs()) {
+			return javaSource.contains("importjava.nio")
+					|| javaSource.contains("importjava.io")
+					|| javaSource.contains("java.io.File")
+					|| javaSource.contains("java.nio.file.Files")
+					|| javaSource.contains("Class.forName")
+					|| javaSource.contains("System.getenv()")
+					|| (javaSource.contains(".exec("));
+		} else {
+			return false;
+		}
 	}
 
 	/**
