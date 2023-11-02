@@ -29,5 +29,16 @@ spring:
     restart:
       enabled: true
       additional-paths: src/main/java
+  # 配置 smtp 服务器地址
+  mail:
+    host: smtp.qq.com
+    # smtp 服务器的端口
+    port: 587
+    # 根据自己的邮箱配置账号以及授权码
+    username: 2221999792@qq.com
+    password: kxukqpqieowkxxxx
+    default-encoding: UTF-8
+    properties:
+      from: 2221999792@qq.com
   mvc:
     static-path-pattern: static/**
