@@ -1,10 +1,12 @@
 package com.rawchen.javarun.modules.mail;
 
+import cn.hutool.core.util.StrUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,7 +30,7 @@ public class MailController {
 //    private String to;
 
     @ResponseBody
-    @GetMapping("/mail/send")
+    @GetMapping("/mail/send01")
     public String sendMail(String to) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom(from);
@@ -92,6 +94,29 @@ public class MailController {
         helper.setText(text + content, true);
 
         sender.send(message);
+        return "success";
+    }
+
+    @ResponseBody
+    @GetMapping("/mail/send")
+    public String sendMail04(String to, String text, String title) {
+
+        if (StrUtil.isEmpty(to)) {
+            return "接收人不允许为空";
+        }
+        if (StrUtil.isEmpty(text)) {
+            text = "空文本";
+        }
+        if (StrUtil.isEmpty(title)) {
+            title = "未命名标题";
+        }
+
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setFrom(from);
+        simpleMailMessage.setTo(to);
+        simpleMailMessage.setSubject(title);
+        simpleMailMessage.setText(text);
+        sender.send(simpleMailMessage);
         return "success";
     }
 }
