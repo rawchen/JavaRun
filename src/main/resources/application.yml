@@ -42,3 +42,7 @@ spring:
       from: 2221999792@qq.com
   mvc:
     static-path-pattern: static/**
+
+logging:
+  level:
+    org.apache.coyote.http11.Http11Processor: warn
