@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -60,7 +59,7 @@ public class MailController {
     }
 
     @ResponseBody
-    @GetMapping("/mail/send03")
+    @GetMapping("/mail/send03_test")
     public String sendMail03(String to, String name, String company, String time, String office, String receptionist, String code) throws MessagingException {
 
         if (name == null) {
